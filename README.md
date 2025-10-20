@@ -1,3 +1,4 @@
 # ITI_ELE_G7
 
-This repository is aimed at arranging all the code involved in the subject's study and developement. 
+Este repositorio incluye todo el código involucrado en el desarollo de los ejercicios de transitorios propuestos. 
+
