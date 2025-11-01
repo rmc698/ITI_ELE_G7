@@ -1,4 +1,4 @@
-# ITI_ELE_G7
+# Transient_analysis
 
 Este repositorio incluye todo el código involucrado en el desarrollo de las distintas prácticas de la asignatura: Itinerario de Ingeniería Eléctrica, impartida en el Máster de Ingeniería Industrial por la Universidad de Almería. 
 
