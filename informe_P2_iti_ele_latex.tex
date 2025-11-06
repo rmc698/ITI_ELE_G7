@@ -1,0 +1,513 @@
+\documentclass{article}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\usepackage{float}
+\usepackage{amsmath}
+
+
+% \title{Ejercicios\_ITI\_ELE\_1}
+% \author{RAMÓN MONTES CHECA & JUAN ANTONIO}
+% \date{Octubre 2025}
+
+\begin{document}
+\newpage
+\includepdf[pages=-]{Portada_power_quality.pdf}
+
+% \maketitle
+\renewcommand{\contentsname}{Índice}
+\tableofcontents
+\newpage
+\section{Análisis en el dominio del tiempo}
+\subsection{Ejercicio 1.1: Cálculo valor RMS}
+A continuación, se detalla el desarrollo paso a paso para la implementación y verificación de la función que calcula el valor RMS de una señal.
+
+\begin{enumerate}
+    \item \textbf{Generación de la señal sinusoidal:} \\
+    Se generó una señal senoidal de frecuencia $f = 50\,\text{Hz}$ y amplitud pico $V_p = 325\,\text{V}$, que corresponde a una tensión eficaz teórica de $V_{\text{RMS,teórico}} = \frac{V_p}{\sqrt{2}} = 230\,\text{V}$. 
+    La señal se generó mediante la ecuación:
+    \[
+        v(t) = V_p \cdot \sin(2\pi f t)
+    \]
+
+    \item \textbf{Frecuencia de muestreo:} \\
+    Se utilizó una frecuencia de muestreo de $f_s = 1000\,\text{Hz}$, lo que implica un periodo de muestreo de $T_s = 1/f_s = 1\,\text{ms}$. 
+    La duración total de la señal se fijó en $T = 0.1\,\text{s}$ (100 ms), obteniéndose un total de $N = f_s \cdot T = 100$ muestras.
+
+    \item \textbf{Cálculo del valor RMS:} \\
+    Se implementó una función en MATLAB denominada \texttt{calculaRMS} que recibe como entrada un vector con los valores de la señal y devuelve el valor RMS calculado según la expresión:
+    \[
+        V_{\text{RMS}} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} v_i^2}
+    \]
+    En el script principal se llamó a la función pasando como argumento el vector de la señal generada.
+
+    \item \textbf{Comparación con el valor teórico:} \\
+    El valor RMS obtenido se comparó con el valor teórico de $230\,\text{V}$. 
+    El error relativo se calculó mediante la expresión:
+    \[
+        \text{Error (\%)} = \frac{|V_{\text{RMS,calc}} - V_{\text{RMS,teórico}}|}{V_{\text{RMS,teórico}}} \times 100
+    \]
+
+    \item \textbf{Verificación del error:} \\
+    El resultado obtenido mostró un valor de $V_{\text{RMS,calc}} \approx 229.9\,\text{V}$, con un error relativo menor al $1\%$, cumpliendo así la especificación del enunciado.
+\end{enumerate}
+
+\subsection*{Ejercicio 1.2: Detección de Cruces por Cero}
+
+En este ejercicio se implementa y prueba una función en \textsc{Matlab} que permite detectar los puntos en los que una señal cruza por el valor cero y, a partir de ellos, estimar la frecuencia de la señal. A continuación se describe el desarrollo punto por punto según las especificaciones dadas.
+
+\begin{enumerate}
+    \item \textbf{Identificación de los índices de cruce por cero}\\
+    Se parte de un vector que contiene la señal muestreada, $x[n]$. El objetivo es localizar las posiciones en las que la señal cambia de signo, ya que dicho cambio indica que entre dos muestras consecutivas se ha producido un cruce por cero. Para ello se analiza el signo de la señal en cada muestra y se detectan los instantes en los que:
+    \[
+        \text{sign}(x[n]) \neq \text{sign}(x[n-1])
+    \]
+    Los índices donde ocurre este cambio se guardan en un vector de cruces. En una primera versión pueden almacenarse directamente los índices de muestra.
+
+    \item \textbf{Uso de la función \texttt{sign()}}\\
+    Para simplificar la detección, se utiliza la función \texttt{sign()} de \textsc{Matlab}, que devuelve $-1$ si el valor es negativo, $0$ si es cero y $1$ si es positivo. Comparando el vector \texttt{sign(x)} con su versión desplazada una muestra, se obtienen todos los puntos donde hay un cambio de signo:
+    \[
+        \text{cambio en } n \iff \text{sign}(x[n]) \neq \text{sign}(x[n-1])
+    \]
+
+    \item \textbf{Cálculo de la frecuencia a partir de los cruces}\\
+    Una vez obtenidos los instantes de cruce por cero, se calcula el tiempo entre cruces consecutivos. El enunciado indica que \emph{dos cruces consecutivos representan medio ciclo}. Por tanto, si $t_k$ y $t_{k+1}$ son los tiempos de dos cruces contiguos:
+    \[
+        T = 2 \cdot \overline{(t_{k+1} - t_k)}
+    \]
+    donde $T$ es el periodo estimado de la señal (se toma la media para reducir el efecto del muestreo). Finalmente, la frecuencia estimada se obtiene como:
+    \[
+        f = \frac{1}{T}
+    \]
+
+    \item \textbf{Desplazamiento temporal debido al muestreo}\\
+    Como el cruce real suele estar entre dos muestras, en la versión mejorada se interpola linealmente entre las dos muestras que cambian de signo para obtener un tiempo de cruce más preciso. De este modo, los puntos marcados en la gráfica coinciden mejor con el cruce real por cero.
+\end{enumerate}
+
+\subsubsection*{Visualización requerida}
+Para validar el funcionamiento de la función se genera una gráfica con los siguientes elementos:
+\begin{itemize}
+    \item Señal temporal completa (por ejemplo, una senoidal de 50 Hz).
+    \item Puntos de cruce por cero marcados con círculos rojos en el eje temporal.
+    \item Línea horizontal en $y=0$ para referencia.
+    \item Título con la frecuencia estimada y leyenda identificando cada elemento.
+\end{itemize}
+
+Un ejemplo de la figura resultante se muestra en la Figura~\ref{fig:cruces_cero}.
+
+\begin{figure}[h!]
+    \centering
+    % Sustituir el nombre del fichero por el que exportes desde Matlab,
+    % por ejemplo: cruces_cero.png o cruces_cero.pdf
+    \includegraphics[width=0.9\linewidth]{cruces_cero.png}
+    \caption{Detección de cruces por cero en una señal senoidal. Los círculos rojos señalan los instantes de cruce y en el título se muestra la frecuencia estimada.}
+    \label{fig:cruces_cero}
+\end{figure}
+
+\subsection*{Ejercicio 1.3: Detección de Variaciones de Tensión}
+
+En este ejercicio se implementa una función en \textsc{Matlab} que calcula el valor eficaz (RMS) de una señal en ventanas deslizantes, con el objetivo de detectar huecos o sobretensiones en el suministro eléctrico. A continuación se detalla el desarrollo punto por punto de acuerdo con las especificaciones indicadas.
+
+\begin{enumerate}
+    \item \textbf{Implementación de la función para el cálculo RMS deslizante}\\
+    Se desarrolló una función denominada \texttt{rms\_deslizante} que calcula el valor RMS en una ventana que se desplaza muestra a muestra a lo largo de la señal. La función recibe como entradas:
+    \begin{itemize}
+        \item El vector de la señal $x$.
+        \item La frecuencia de muestreo $f_s$ (en Hz).
+        \item El tamaño de la ventana en milisegundos.
+    \end{itemize}
+    El número de muestras de la ventana se obtiene como:
+    \[
+        N_{\text{vent}} = f_s \cdot \frac{t_{\text{vent}}}{1000}
+    \]
+    y para cada posición $k$ se calcula:
+    \[
+        V_{\text{RMS}}[k] = \sqrt{\frac{1}{N_{\text{vent}}} \sum_{i=k}^{k+N_{\text{vent}}-1} x_i^2}
+    \]
+    desplazando la ventana una muestra en cada iteración.
+
+    \item \textbf{Parámetros de entrada y tamaño de ventana}\\
+    Se consideró una frecuencia de muestreo de $f_s = 1000\,\text{Hz}$ y una duración total de la señal de $T = 0.2\,\text{s}$.
+    El tamaño de la ventana se fijó en $20\,\text{ms}$, que corresponde a un ciclo completo de una señal de $50\,\text{Hz}$. Este valor proporciona un buen equilibrio entre resolución temporal y estabilidad del cálculo RMS, tal como se indica en el enunciado.
+
+    \item \textbf{Ventana deslizante muestra a muestra}\\
+    La función se implementó para que la ventana se desplace una muestra en cada paso, lo que permite obtener un valor RMS asociado a cada instante de tiempo y así poder detectar variaciones rápidas en la tensión.
+
+    \item \textbf{Cálculo de resultados y salida de la función}\\
+    La función devuelve dos vectores:
+    \begin{itemize}
+        \item $v_{\text{RMS}}$: valores RMS calculados en cada posición de la ventana.
+        \item $t_{\text{RMS}}$: vector temporal asociado, correspondiente al punto medio de cada ventana.
+    \end{itemize}
+
+    \item \textbf{Prueba con una señal que contiene un hueco de tensión}\\
+    Se generó una señal senoidal de $50\,\text{Hz}$ con amplitud pico de $325\,\text{V}$, que equivale a una tensión RMS nominal de $230\,\text{V}$. 
+    Entre los instantes $t = 80\,\text{ms}$ y $t = 120\,\text{ms}$ se introdujo un hueco del $50\,\%$ de profundidad (la amplitud se redujo a la mitad), con el fin de verificar la respuesta de la función.
+
+    \item \textbf{Resultados obtenidos}\\
+    En la gráfica superior se representa la señal original con el hueco de tensión introducido, y en la inferior el valor RMS calculado en ventanas deslizantes de $20\,\text{ms}$. 
+    Se observa que el RMS deslizante se mantiene en torno a $230\,\text{V}$ antes y después del hueco, mientras que durante la perturbación cae hasta aproximadamente $115\,\text{V}$, valor coherente con la reducción del 50\,\% en la amplitud.
+\end{enumerate}
+
+\subsubsection*{Visualización de resultados}
+
+A continuación se muestra la figura con los resultados experimentales obtenidos al aplicar la función desarrollada.
+
+\begin{figure}[h!]
+    \centering
+    % Sustituir el nombre del fichero por el que exportes desde MATLAB,
+    % por ejemplo: rms_deslizante.png o rms_variaciones.pdf
+    \includegraphics[width=0.9\linewidth]{rms_deslizante.png}
+    \caption{Cálculo del RMS en ventanas deslizantes. 
+    Se observa la caída del valor eficaz durante el hueco de tensión y la recuperación al valor nominal una vez finalizado.}
+    \label{fig:rms_deslizante}
+\end{figure}
+
+\subsection*{Actividad Guiada: Analizar un Hueco de Tensión}
+
+En esta actividad se analiza el comportamiento del valor eficaz (RMS) de una señal cuando se introduce un hueco de tensión. Para ello se genera una señal senoidal, se aplica una reducción temporal en la amplitud y se evalúa el resultado utilizando la función de cálculo RMS deslizante desarrollada en el Ejercicio~1.3.
+
+\subsubsection*{Pasos realizados}
+
+\begin{enumerate}
+    \item \textbf{Generación de la señal base:} \\
+    Se generó una señal senoidal de $50\,\text{Hz}$ y amplitud pico de $325\,\text{V}$ (equivalente a $230\,\text{V}_{\text{RMS}}$), con una frecuencia de muestreo de $2000\,\text{Hz}$ y duración total de $200\,\text{ms}$.
+
+    \item \textbf{Introducción del hueco:} \\
+    Se introdujo un hueco de tensión entre $t = 50\,\text{ms}$ y $t = 100\,\text{ms}$, con una profundidad del $50\%$ (la amplitud se redujo a la mitad durante ese intervalo).
+
+    \item \textbf{Cálculo del RMS deslizante:} \\
+    Se aplicó la función \texttt{rms\_deslizante} con una ventana de $20\,\text{ms}$ (equivalente a un ciclo de la señal), desplazada muestra a muestra.
+
+    \item \textbf{Visualización de resultados:} \\
+    En la parte superior de la figura se muestra la señal completa con el hueco de tensión, y en la inferior el valor RMS calculado. Además, se añadieron líneas de referencia para la tensión nominal ($230\,\text{V}$) y el límite inferior del $-10\%$ ($207\,\text{V}$).
+\end{enumerate}
+
+\begin{figure}[h!]
+    \centering
+    % Sustituir el nombre del fichero por el que exportes desde MATLAB,
+    % por ejemplo: hueco_tension.png o hueco_rms.pdf
+    \includegraphics[width=0.9\linewidth]{hueco_tension.png}
+    \caption{Análisis de un hueco de tensión utilizando el RMS deslizante. 
+    Se observa la caída temporal del valor eficaz durante el hueco y su posterior recuperación.}
+    \label{fig:hueco_tension}
+\end{figure}
+
+\subsubsection*{Análisis de resultados}
+
+A partir de los gráficos obtenidos se responde a las siguientes cuestiones:
+
+\begin{enumerate}
+    \item \textbf{¿En qué momento se detecta el inicio del hueco?} \\
+    Aunque el hueco comienza físicamente en $t = 50\,\text{ms}$, la detección mediante el RMS se retrasa ligeramente debido al tamaño de la ventana (20\,ms). El descenso del RMS se observa a partir de aproximadamente $t = 60\,\text{ms}$, cuando parte de la ventana empieza a incluir muestras del hueco.
+
+    \item \textbf{¿Cuál es el valor RMS mínimo alcanzado?} \\
+    Durante el hueco, la amplitud se reduce al 50\,\%, por lo que el valor eficaz teórico esperado es:
+    \[
+        V_{\text{RMS,min}} = 230\,\text{V} \times 0.5 = 115\,\text{V}.
+    \]
+    El valor obtenido en la simulación coincide aproximadamente con $115\,\text{V}$, lo que confirma el correcto funcionamiento del cálculo.
+
+    \item \textbf{¿Cuánto tarda la señal en volver al valor nominal?} \\
+    El hueco finaliza en $t = 100\,\text{ms}$, pero la recuperación completa del RMS no se aprecia hasta alrededor de $t = 110\,\text{ms}$, debido nuevamente a la duración de la ventana (10\,ms adicionales para llenarse con muestras ya sin hueco).
+
+    \item \textbf{¿El hueco supera el límite del $-10\%$? ¿Por cuánto tiempo?} \\
+    Sí, el valor RMS desciende claramente por debajo de $207\,\text{V}$ desde aproximadamente $t = 60\,\text{ms}$ hasta $t = 110\,\text{ms}$. \\
+    Por tanto, el hueco supera el umbral de $-10\%$ durante unos $50\,\text{ms}$, coincidiendo con la duración real del hueco aplicado.
+\end{enumerate}
+
+En conclusión, el análisis confirma que el método de RMS deslizante detecta correctamente tanto la caída de tensión como su recuperación, proporcionando una estimación precisa de la magnitud y duración del hueco.
+
+
+\newpage
+\section{Análisis en el dominio de la frecuencia}
+\subsection{Análisis espectral básico}
+Aplicando la transformada de Fourier a una señal que atiende a la ecuación: 
+\[
+    V(t) = 325*sen(2\pi ft) 
+\]
+Se obtiene el espectro que se visualiza en \hyperref[fig:fundamental]{Figura~\ref*{fig:fundamental}}. Tal y como era de esperar en el dominio de la frecuencia, se obtiene un pulso de la misma magnitud que la tensión pico de la señal en el dominio del tiempo. Este valor de magnitud es fruto del tratamiento realizado al espectro, en el cual se duplica la magnitud de los picos del espectro. 
+\\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{espectro fundamental.jpg} 
+    \caption{Transformada de Fourier de una senoidal pura}
+    \label{fig:fundamental}
+\end{figure}
+
+Una vez validado el funcionamiento del módulo que computa la transformada de Fourier de la señal, se podrá utilizar el mismo dentro de la función de análisis de armónicos que se desarrollará a continuación. 
+
+\subsection{Análisis de armónicos}
+La señal analizada junto a su espectro se puede observar en \hyperref[fig:thd_prueba]{Figura~\ref*{fig:thd_prueba}}. 
+\\
+
+Salta a la vista que la señas tiene unos picos en los entornos de los máxmos y los mínimos de la señal que provienen de la influencia de los armónicos.  
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{thd.jpg} 
+    \caption{Análisis espectral de señal con armónicos}
+    \label{fig:thd_prueba}
+\end{figure}
+
+En \hyperref[tab:mag_harm]{Tabla~\ref*{tab:mag_harm}}, se reúnen las magnitudes del fundamental y los armónicos que conforman la señal compuesta. 
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{c c c}  % c = centrado, l = izquierda, r = derecha
+\hline
+Nº armónico & Magnitud (V) & Porc. Fund. (\%) \\  % encabezado
+\hline
+1 & 324.5517 & 99.86\% \\
+3 & 48.0877 & 14.7962\% \\
+5 & 31.4226 & 9.6697\% \\
+\hline
+\end{tabular}
+\caption{Magnitudes de los armónicos de la señal}
+\label{tab:mag_harm}
+\end{table}
+
+Los resultados obtenidos difieren ligeramente de los resultados numéricos esperados. Si bien es cierto que la resolución de frecuencia (fs/N) no permite analizar mútliplos enteros, por lo que no se pueden analizar las frecuencias exactas de los armónicos correspondientes. Lo que implica que el programa devuelve las magnitudes en frecuencias distintas al fundamental y los armónicos. Esto implica que hayu ligeras variaciones en los valores otorgados, produciendo consecuentemente que el THD difiera del resultado puramente teórico. 
+\\
+
+Para corroborar dicha hipótesis, se ha vuelto a ejecutar el análisis, pero suponiendo una frecuencia de muestreo 10 veces superior (20000 Hz). En dicho caso, los resultados \hyperref[tab:mag_harm_fs]{Tabla~\ref*{tab:mag_harm_fs}}
+\\
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{c c c}  % c = centrado, l = izquierda, r = derecha
+\hline
+Nº armónico & Magnitud (V) & Porc. Fund. (\%) \\  % encabezado
+\hline
+1 & 324.9885 & 99.99\% \\
+3 & 48.7248 & 14.99\% \\
+5 & 32.4673 & 9.98\% \\
+\hline
+\end{tabular}
+\caption{Análisis con mayor frecuencia de muestreo}
+\label{tab:mag_harm_fs}
+\end{table}
+
+Por otro lado, en el análisis a la frecuencia indicada en el guion (fs=2000 Hz), se puede observar que en las frecuencias donde no hay contenido armónico, el programa de análisis asigna valores no nulos tal y como se puede apreciar en \hyperref[tab:armónicos_porcentaje]{Tabla~\ref*{tab:armónicos_porcentaje}}.
+\\
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{c c c}
+\hline
+Nº armónico & Magnitud (V) & Porc. Fund. (\%) \\
+\hline
+1 & 324.5517 & 99.86\% \\
+2 & 0.2902   & 0.0894\% \\
+3 & 48.0877  & 14.81\% \\
+4 & 0.2045   & 0.0630\% \\
+5 & 31.4226  & 9.68\% \\
+6 & 0.3574   & 0.110\% \\
+7 & 0.2475   & 0.0763\% \\
+8 & 0.2007   & 0.0618\% \\
+9 & 0.1728   & 0.0532\% \\
+10 & 0.1539  & 0.0474\% \\
+11 & 0.1402  & 0.0432\% \\
+12 & 0.1299  & 0.0400\% \\
+13 & 0.1219  & 0.0376\% \\
+14 & 0.1158  & 0.0357\% \\
+15 & 0.1110  & 0.0342\% \\
+\hline
+\end{tabular}
+\caption{Tabla de armónicos y porcentaje respecto a la fundamental}
+\label{tab:armónicos_porcentaje}
+\end{table}
+
+Por lo que, el programa desarrollado devuelve magnitudes ligeramente inferiores en los armónicos y el fundamental, que son los componentes de la señal, y devuelve valores no nulos en las magnitudes de aquellas frecuencias que no forman parte del contenido espectral teórico de la señal. 
+\\ 
+
+A modo de conclusión cabe resaltar que se ha demostrado que el programa desarrollado será más eficaz conforme mayor sea la frecuencia de muestreo de la señal analizada, arrojando resultados más precisos. 
+
+
+\subsection{Comparación de cargas}
+Las señales generadas para el análisis se pueden visualizar en \hyperref[fig:senales_cargas]{Figura~\ref*{fig:senales_cargas}}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{senales_cargas.jpg} 
+    \caption{Señales de las cargas}
+    \label{fig:senales_cargas}
+\end{figure}
+
+Salta a la vista que al aumentar el contenido espectral de la señal, aumenta la deformación de la señal, perdiendo su semejanza con la silueta senoidal del fundamental. 
+\\
+
+Al introducir las señales de las cargas en la función programada para el análisis de armónicos, se obtienen los resultados recogidos en la \hyperref[tab:thd_cargas]{Tabla~\ref*{tab:thd_cargas}}.
+\\
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{c c c}  % c = centrado, l = izquierda, r = derecha
+\hline
+Nº carga & THD \\  % encabezado
+\hline
+Carga 1 & 0.1850\%  \\
+Carga 2 & 10.9656\%  \\
+Carga 3 & 30.2193\% \\
+\hline
+\end{tabular}
+\caption{Tabla comparativa THD cargas}
+\label{tab:thd_cargas}
+\end{table}
+
+Los índices de THD difieren ligeramente de los valores teóricos, fruto de las causas analizadas anteriormente. Las fluctuaciones de los resultados no serían críticas en las cargas 2 y 3, puesto que ambas están por encima del límite establecido del 8\%. Por otro lado, que el valor de la carga 1 sea no nulo inclina a pensar que la señal tiene contenido espectral más allá del fundamental, lo cual que no se corresponde con la naturaleza de la señal.  Este hecho es fruto de que el programa de análisis no concentra todo el contenido espectral en el fundamental, por lo que atendiendo a la fórmula que define el THD, se puede deducir fácilmente, que el valor computado en función de los resultados producidos por el programa será no nulo. 
+\\
+
+Los espectros correspondientes de las 3 cargas se pueden visualizar en \hyperref[fig:Espectros_cargas]{Figura~\ref*{fig:Espectros_cargas}}.
+\\
+
+Las magnitudes de los armónicos representadas en las gráficas coinciden con las magnitudes de los armónicos que componen las distintas señales.  
+\\
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Espectros cargas.jpg} 
+    \caption{Gráficos de barras de los espectros de las cargas}
+    \label{fig:Espectros_cargas}
+\end{figure}
+
+Conforme a los resultados teóricos, así como a los resultados obtenidos a través del análisis en Matlab, las cargas 2 y 3 estarían por encima de los límites establecidos por la normativa. 
+
+
+
+\newpage
+\section{Evaluación por grupos}
+\subsection*{4.7 \quad Grupo 7: Fallo Temporal en Transformador}
+
+\textbf{Escenario.} Un transformador de distribución sufre un fallo temporal que provoca primero un \emph{hueco de tensión} (sag) y, a continuación, una \emph{sobretensión de recuperación} (swell), antes de volver al valor nominal. El objetivo es generar la señal, calcular su RMS en ventanas deslizantes y analizar las tres fases del evento.
+
+\subsubsection*{Especificaciones de la señal}
+\begin{itemize}
+    \item Duración total: $600 \,\text{ms}$.
+    \item Tensión nominal: $325 \,\text{V}$ pico (equivale a $230 \,\text{V}_{\text{RMS}}$).
+    \item Eventos:
+    \begin{itemize}
+        \item Hueco inicial: reducción al $55\,\%$ de la amplitud nominal (hueco del $45\,\%$) durante $100 \,\text{ms}$, con inicio en $t = 50 \,\text{ms}$.
+        \item Sobretensión de recuperación: incremento del $15\,\%$ sobre la amplitud nominal durante $120 \,\text{ms}$, comenzando justo después del hueco.
+        \item Retorno a tensión nominal hasta el final de los $600 \,\text{ms}$.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{Desarrollo de las tareas}
+
+\begin{enumerate}
+    \item \textbf{Generar la señal con ambos eventos consecutivos} \\
+    Se generó una señal senoidal de $50\,\text{Hz}$ y amplitud pico $V_p = 325\,\text{V}$, con una duración total de $0.6\,\text{s}$ y una frecuencia de muestreo de $10\,\text{kHz}$. \\
+    Para simular el fallo temporal en el transformador se introdujeron dos eventos consecutivos:
+    \begin{itemize}
+        \item \textbf{Hueco de tensión (sag)} del $45\,\%$, reduciendo la amplitud al $55\,\%$ de la nominal entre las muestras 501 y 1501, correspondiente al intervalo $t = 50\,\text{ms}$ a $150\,\text{ms}$.
+        \item \textbf{Sobretensión de recuperación (swell)} del $15\,\%$, aumentando la amplitud al $115\,\%$ de la nominal entre las muestras 1501 y 2701, correspondiente al intervalo $t = 150\,\text{ms}$ a $270\,\text{ms}$.
+    \end{itemize}
+    Tras estos eventos, la señal retorna a su nivel nominal. La figura \ref{fig:senal_sag_swell} muestra la señal completa generada.
+
+    \item \textbf{Calcular RMS deslizante (ventana: 20 ms)} \\
+    Se empleó la función \texttt{rms\_deslizante}, la cual calcula el valor eficaz en ventanas móviles que se desplazan muestra a muestra a lo largo de toda la señal. \\
+    La ventana se definió con una duración de $20\,\text{ms}$ (un ciclo completo a $50\,\text{Hz}$), es decir, $N = 200$ muestras. El resultado se almacenó en el vector \texttt{rms\_vec} y el tiempo asociado en \texttt{t\_rms}.
+
+    \item \textbf{Identificar claramente las tres fases del evento} \\
+    A partir del análisis de la señal y del gráfico del valor eficaz     se distinguen tres fases bien definidas:
+    \begin{enumerate}
+        \item \textbf{Fase nominal inicial} (0--50\,ms): la tensión RMS se mantiene estable en torno a $230\,\text{V}$.
+        \item \textbf{Hueco de tensión} (50--150\,ms): el RMS desciende hasta aproximadamente $125\,\text{V}$, coherente con una reducción del $45\,\%$ en la amplitud.
+        \item \textbf{Sobretensión de recuperación} (150--270\,ms): el RMS aumenta hasta unos $265\,\text{V}$, equivalente a un incremento del $15\,\%$ sobre el valor nominal.
+        \item Finalmente, la señal retorna a su valor nominal a partir de los $270\,\text{ms}$.
+
+
+    \item \textbf{Medir duraciones y magnitudes de cada fase} \\
+    De la observación directa de las gráficas se obtienen las siguientes magnitudes y duraciones:
+    \[
+    \begin{array}{lcc}
+    \textbf{Fase} & \textbf{Duración (ms)} & \textbf{Valor RMS (V)} \\ \hline
+    \text{Nominal inicial} & 0\text{--}50 & 230 \\
+    \text{Hueco (sag)} & 50\text{--}150 & 125 \\
+    \text{Sobretensión (swell)} & 150\text{--}270 & 265 \\
+    \text{Retorno nominal} & 270\text{--}600 & 230 \\
+    \end{array}
+    \]
+    Estas mediciones coinciden con los valores teóricos esperados, validando el correcto funcionamiento del cálculo de RMS deslizante.
+\end{enumerate}
+   
+    \item \textbf{Analizar el riesgo para equipos conectados} \\
+   Durante la secuencia de perturbaciones observada —un \textit{hueco de tensión} seguido de una \textit{sobretensión de recuperación}— pueden producirse diversos efectos negativos sobre los equipos eléctricos y electrónicos.
+
+En el caso analizado:
+\[
+V_{\text{RMS, sag}} \approx 0.55\,\text{pu} \quad \text{y} \quad V_{\text{RMS, swell}} \approx 1.15\,\text{pu},
+\]
+ambos dentro de los rangos definidos.
+
+Los principales \textbf{efectos sobre equipos conectados} son los siguientes:
+\begin{itemize}
+    \item En el \textbf{hueco de tensión}, la reducción temporal del voltaje puede causar:
+    \begin{itemize}
+        \item Reinicios o desconexión de equipos electrónicos sensibles (PLC, variadores de frecuencia, sistemas informáticos).
+        \item Disparo de contactores o relés debido a caída de tensión en sus bobinas.
+        \item Reducción de par y calentamiento en motores de inducción si el hueco se prolonga más de algunos ciclos.
+    \end{itemize}
+
+    \item En la fase de \textbf{sobretensión}, el exceso de tensión RMS puede originar:
+    \begin{itemize}
+        \item Sobreesfuerzo dieléctrico en condensadores y devanados de transformadores.
+        \item Aumento de pérdidas por efecto Joule y riesgo de envejecimiento prematuro de los aislamientos.
+        \item Corrientes elevadas en cargas no lineales o fuentes conmutadas, pudiendo dañar los semiconductores de potencia.
+    \end{itemize}
+
+    Además, la sucesión inmediata de ambos fenómenos —caída seguida de elevación— puede resultar especialmente crítica, ya que los equipos se ven primero privados de energía y posteriormente sometidos a una sobretensión justo en la etapa de reconexión.
+\end{itemize}
+
+Por tanto, se concluye que este tipo de evento podría provocar desde \textit{paradas de proceso y reinicios no deseados} hasta \textit{fallos de aislamiento o daños electrónicos}, dependiendo de la sensibilidad de las cargas y la capacidad de filtrado o compensación instalada.
+
+    \item \textbf{Proponer sistemas de protección adecuados} \\
+
+\begin{enumerate}
+    \item \textbf{Compensación dinámica de tensión:}
+    \begin{itemize}
+        \item Uso de \textbf{Dynamic Voltage Restorers (DVR)}, que inyectan tensión en serie para compensar huecos breves de hasta un minuto, restaurando el valor RMS nominal prácticamente de forma instantánea.
+    \end{itemize}
+
+    \item \textbf{Alimentación ininterrumpida y acondicionamiento:}
+    \begin{itemize}
+        \item Empleo de \textbf{Sistemas de Alimentación Ininterrumpida (UPS)} con capacidad de doble conversión, capaces de mantener la tensión de salida estable frente a sags y swells de corta duración, especialmente en instalaciones con equipos electrónicos o informáticos.
+    \end{itemize}
+
+    \item \textbf{Control de tensión en red:}
+    \begin{itemize}
+        \item Instalación de \textbf{reguladores automáticos de tensión (AVR)} para mitigar desviaciones prolongadas (over/undervoltage).
+        \item Uso de \textbf{Compensadores Estáticos de VAR (SVC)} o \textbf{STATCOM} para estabilizar la tensión mediante el control del flujo de potencia reactiva.
+    \end{itemize}
+
+    \item \textbf{Protección preventiva y registro:}
+    \begin{itemize}
+        \item Implementar \textbf{reles de protección con registro PQ integrado}, capaces de detectar y almacenar eventos de sag/swell junto con su marca temporal.
+        \item Incorporar sistemas de \textbf{monitorización RMS en ventana deslizante}, similares a los empleados en esta práctica, como herramienta de diagnóstico continuo.
+    \end{itemize}
+
+    \item \textbf{Gestión de cargas y mantenimiento:}
+    \begin{itemize}
+        \item Reparto equilibrado de cargas monofásicas en sistemas trifásicos para evitar desequilibrios.
+        \item Mantenimiento preventivo de transformadores, líneas y protecciones para reducir las causas internas de variaciones de tensión.
+    \end{itemize}
+\end{enumerate}
+
+En conjunto, la combinación de medidas reactivas (DVR, UPS, SVC) y preventivas (monitorización continua, mantenimiento predictivo y balanceo de cargas) constituye la estrategia más eficaz para asegurar una \textbf{alta calidad de suministro eléctrico} y proteger la instalación frente a perturbaciones temporales de tensión.
+
+
+\subsubsection*{Figuras}
+
+
+\begin{figure}[h!]
+    \centering
+    % Exportar desde Matlab la figura del RMS a lo largo del tiempo
+    \includegraphics[width=0.95\linewidth]{eje_grupo.jpg}
+    \caption{Valores de tensión RMS calculados con ventana deslizante de 20 ms. Se distinguen claramente las tres fases del evento y el retorno a nominal.}
+    \label{fig:grupo}
+\end{figure}
+
+\end{document}
