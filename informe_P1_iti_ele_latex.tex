@@ -1,0 +1,278 @@
+\documentclass{article}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\usepackage{float}
+
+
+% \title{Ejercicios\_ITI\_ELE\_1}
+% \author{RAMÓN MONTES CHECA & JUAN ANTONIO}
+% \date{Octubre 2025}
+
+\begin{document}
+\newpage
+\includepdf[pages=-]{Portada_transient.pdf}
+
+% \maketitle
+\renewcommand{\contentsname}{Índice}
+\tableofcontents
+\newpage
+\section{Problemas teóricos}
+
+
+
+
+
+
+
+\subsection{Problema 1}
+\subsubsection{A}
+
+Consideramos el siguiente circuito RL:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{RL.png}
+    \caption{Circuito RL }
+    \label{fig:circuitoRLabierto}
+\end{figure}
+
+Sabiendo que en una ecuación diferencial de primer orden:
+
+\[
+a \frac{df(t)}{dt} + b f(t) = g(t)
+\]
+
+La constante de tiempo
+$ \tau = \frac{a}{b}$ . De acuerdo a la ecuación diferencial que rige nuestro sistema: 
+
+\[
+L \frac{di(t)}{dt} + R i(t) = V 
+\]
+ 
+La constante de tiempo de nuestro circuito se corresponde a: 
+\[
+\tau = \frac{L}{R}=\frac{0,15}{330}
+\]
+
+\subsubsection{B}
+A continuación se representa la respuesta del circuito en la \hyperref[fig:Respuesta i(t)]{Figura~\ref*{fig:Respuesta i(t)}}.\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{I_problema1.png}
+    \caption{Respuesta i(t)}
+    \label{fig:Respuesta i(t)}
+\end{figure}
+ \\
+En la \hyperref[fig:Respuesta i(t)]{Figura~\ref*{fig:Respuesta i(t)}} podemos ver como en t=0, I=0 debido a la presencia de la bobina en el circuito, la cual se opone a cambios instantáneos de corriente (la corriente que circula es la misma que en el instante previo a la conexión de la fuente) y actúa como un circuito abierto en ese instante.
+
+Por otra parte el punto rojo de la imagen representa la intensidad cuando $ t = \tau$ lo que es el 63,2 \% del valor en estado estacionario, como veremos en el apartado final.
+
+Finalmente se ha representado una línea horizontal sobre el valor de I en $ t = 5\tau$ observando que es aproximadamente el valor de la corriente en estado estacionario (aproximadamente el 99 \%). 
+
+
+\subsubsection{C}
+Se tarda justamente $\tau$  en alcanzar ese valor, esto responde a la naturaleza exponencial de la respuesta del sistema $ i = if(1- e^{t/\tau} )$ . 
+Observando que en $t= \tau$ $i=if(1-e^-1)=0,632*if$
+\\
+\\
+
+\subsection{Problema 2}
+\subsubsection{A}
+La corriente inicial en el circuito será I0=V0/R. 
+
+Teniendo en cuenta que no hay ningún elemento adicional al condensador y la resistencia, el condensador se descargará a través de la resistencia, si la V0=20V y R=1200 ohmios:
+
+\[
+I0 = \frac{V0}{R}=\frac{20}{1200}=0,0167 A
+\]
+
+\subsubsection{B}
+Conociendo la ecuación que rige la respuesta de un circuito RC libre: 
+\[
+i = I0(e^\frac{-t}{\tau})
+\]
+
+La intensidad tardará en reducir su valor inicial $e^-1$; $t=\tau$ 
+\\
+\\
+
+\subsection{Problema 3}
+Respecto a la corriente en una bobina, en vista de la expresión que define su potencia, se puede deducir que una variación instantánea de la corriente, implicaría un término diferencial que tiende a infinito, implicando que se consume una potencia que tiende a infinito, lo que a su vez implicaría una transmisión de energía instantánea, lo que no es físicamente posible, en base a la ley de la conservación de la energía.  
+\\
+
+Expresión que define la potencia en una bobina: 
+
+\[
+P_L = V_L*I_L = L*\frac{dI_L}{dt}*I_L
+\]
+
+Otra perspectiva posible es desde el electromagnetismo. Sabiendo que el campo magnético inducido tiende a oponerse a la causa que lo generó (Faraday-Lenz), generando una fuerza electromotriz, rigiéndose por la fórmula: 
+
+\[
+fem = \frac{-d\phi_M}{dt}
+\]
+
+Sabiendo que el flujo magnético viene inducido por la corriente, una variación espontánea de la misma, implicaría una variación espontánea del flujo magnético, generando consecuentemente un pico de tensión. 
+\\
+
+
+La caída de tensión en un condensador presenta un comportamiento análogo al de la corriente en la bobina. 
+\\
+
+Observando la fórmula que define la potencia consumida en un condensador, se deduce con facilidad, que una variación repentina de la tensión implicaría un diferencial que tiende a infinito, implicando una potencia que tiende a infinito, lo cual es físicamente imposible, en función del razonamiento energético realizado anteriormente. 
+
+\[
+P_C = V_C*C\frac{dV_C}{dt}
+\]
+
+Desde una perspectiva enfocada en el electromagnetismo, al cargarse el condensador, se conforma un campo eléctrico entre las placas del mismo (puesto que no hay transmisión de carga en el dieléctrico); de modo que, un cambio de tensión instantáneo implicaría que el campo eléctrico tendría que reordenarse de forma instantánea, lo que no es físicamente posible.
+
+
+\newpage
+
+\section{Simulación}
+El circuito simulado se puede observar en \hyperref[fig:RLC_circuit]{Figura~\ref*{fig:RLC_circuit}}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{RLC problema simulacion .png}
+    \caption{Circuito RLC simulado}
+    \label{fig:RLC_circuit}
+\end{figure} 
+
+Por un lado, la caída de tensión que tiene lugar en el condensador se puede observar en \hyperref[fig:tension_cond]{Figura~\ref*{fig:tension_cond}}
+\\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{tension cond sim.jpg}
+    \caption{Caída de tensión en el condensador}
+    \label{fig:tension_cond}
+\end{figure}
+
+Se observa claramente un transitorio de primer orden cuyo valor en estacionario se corresponde con la tensión de la fuente, implicando que el condensador queda cargado con la misma tensión que aplica la fuente, por lo que no habiendo caída de tensión entre los terminales del RL serie que componen el resto de elementos pasivos del circuito (en base a la Segunda Ley de Kirchoff), no se espera corriente en estacionario (considerando que una corriente por la resistencia implicaría caídas de tensión según la Ley de Ohm). 
+\\
+
+Por otro lado, la corriente de la bobina será la misma que transcurre por la resistencia y por el condensador, al tratarse de una disposición en serie. Dicha corriente se puede observar en \hyperref[fig:corriente_bob]{Figura~\ref*{fig:corriente_bob}}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{corriente bob sim.jpg} 
+    \caption{Corriente en la rama RLC}
+    \label{fig:corriente_bob}
+\end{figure}
+\\
+
+Se observa un incremento repentino en los instantes sucesivos a la conmutación de la fuente de tensión, tras el cual se observa un transitorio de primer orden descendente. Dicho transitorio es coincidente con el transitorio que se puede observar en la caída de tensión en el condensador, puesto que a mayor carga del condensador, menor caída tiene lugar en el RL, por lo que menos corriente transcurrirá por la resistencia, por la correspondencia con la Ley de Ohm expuesta anteriormente. La correlación mencionada entre los transitorios se verifica situando gráficamente las constantes de tiempo de sendos transitorios (puntos rojos en las gráficas) y observando que comparten valores similares. 
+\\
+
+Respecto al pico de corriente, considerando que se produce un diferencial de tensión abrupto al conmutar la fuente de tensión, observando la fórmula que rige la dinámica del condensador, se puede deducir que dicha transición brusca se transmitirá a la corriente que circula por el condensador, al estar el resto de elementos pasivos en serie con el condensador, dicha corriente será común a toda la rama. Dicho incremento de corriente también es coherente con la segunda Ley de Kirchoff, puesto que en los instantes iniciales, el condensador parte de carga nula, por lo que la tensión de la fuente cae prácticamente en su totalidad en el resto de elementos de la rama. 
+\\
+
+Se ha deducido en ejercicios anteriores que la corriente no puede variar de forma abrupta en inductores. No obstante, en las simulaciones realizadas, se observa que se produce un pico en la corriente. Si se observa en detalle, dicho pico no se produce de manera instantánea, sino que tiene un transitorio propiamente, tal y como se puede observar en \hyperref[fig:corriente_pico]{Figura~\ref*{fig:corriente_pico}}. De dicho análisis se podría deducir que la simulación respeta la naturaleza física de los fenómenos electromagnéticos que tienen lugar en el circuito. 
+\\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{pico corriente.jpg} 
+    \caption{Transitorio del pico de corriente}
+    \label{fig:corriente_pico}
+\end{figure}
+
+De forma adicional, a modo de validación, se ha observado el comportamiento de la corriente en un simulador distinto, concretamente, en LTSpice. Los resultados se observan en \hyperref[fig:corriente_pico_ltspice]{Figura~\ref*{fig:corriente_pico_ltspice}}.
+
+Se observa una magnitud del pico de la corriente similar a la observada en la simulación llevada a cabo con Matlab, sí como un transitorio de constante de tiempo igual. Por lo que se puede afirmar que el comportamiento observado es similar en diversos software de simulación, lo que aporta solidez a las conclusiones extraídas.  
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{corriente bobina ltspice .png} 
+    \caption{Transitorio del pico de corriente en Ltspice}
+    \label{fig:corriente_pico_ltspice}
+\end{figure}
+
+
+\newpage
+
+\clearpage
+\section{Problema avanzado}
+
+\subsection{A}
+
+Para determinar el tipo de respuesta de este circuito RLC en serie se valora el valor de la frecuencia natural del sistema (w0) con respecto al factor de amrotiguamiento. 
+Para ello aplicamos la ley de voltajes de Kirchhoff:
+
+\begin{equation}
+R i(t) + \frac{1}{C} \int_{0}^{t} i(t)\,dt + L \frac{di(t)}{dt}  = V_g
+\end{equation}
+
+Derivamos y dividimos por L para extraer la ecuación diferencial:
+
+\begin{equation}
+\frac{d^{2} i(t)}{dt^{2}} + \frac{R}{L} \frac{di(t)}{dt} + \frac{i(t)}{LC} = 0
+\end{equation}
+
+Sabiendo que i(t) tiene la siguiente forma:  $ i = Ae^{st}$ , obtenemos la siguiente ecuación:
+
+\begin{equation}
+A s^{2} e^{st} + \frac{R}{L} A s e^{st} + \frac{A e^{st}}{LC} = 0 
+\Rightarrow A e^{st} \left( s^{2} + \frac{R s}{L} + \frac{1}{LC} \right) = 0
+\end{equation}
+
+Descartando la solución trivial A = 0 calculamos las raicel del polinomio característico, obteniendo los siguientes resultados:
+
+\begin{equation}
+s_{1} = -\frac{R}{2L} + \sqrt{\left( \frac{R}{2L} \right)^{2} - \frac{1}{LC}} 
+\end{equation}
+\begin{equation}
+s_{2} = -\frac{R}{2L} - \sqrt{\left( \frac{R}{2L} \right)^{2} - \frac{1}{LC}}
+\end{equation}
+De donde obtenemos los valores de amortiguamiento:\\
+
+ Frecuencia natural: $ \alpha = \frac{R}{2L}=500s^{-1}$\\ 
+ 
+ Factor de amortiguamiento: $ w_0 = \sqrt{\frac{1}{LC}}=1581,1 s^{-1}$  \\
+ 
+ Frecuencia amortiguada:  $ w_0 = |\sqrt{\left( \frac{R}{2L} \right)^{2} - \frac{1}{LC}}|=1500 s^{-1}$\\
+
+Analizando estos valores, vemos que $w_0>\alpha$ por lo que la respuesta del sistema será subamortiguada, es decir, converge oscilatoriamente en torno al valor que alcanza en estado estacionario.
+
+\subsection{B}
+Para dibujar forma de onda de i(t) primeramente procedemos a obtener la ecuación que rige el sistema. 
+Tras obtener s1 y s2, definimos la solución general de i(t): \\
+\begin{equation}
+i(t) = A_{1} e^{s_{1} t} + A_{2} e^{s_{2} t}
+\end{equation}
+Lo que también se puede definir como:
+\begin{equation}
+i(t) =e^{-\alpha t} \left( C_{1} \cos \omega_{d} t + C_{2} \sin \omega_{d} t \right)
+\end{equation}
+A partir de las condiciones iniciales, calculamos C1 y C2. 
+Primera condición inicial, i(0+)=0 debido a la oposición de la bobina al cambio de corriente instantáneo. Sustituyendo en la solución general obtenemos:\\
+$C_1=0$\\
+Segunda condición inicial, aplicamos ley de tensiones de kirchhoff en t=0:\\
+\begin{equation}
+Vg=V_C+V_R+V_L \Rightarrow 10=R i(0) + \frac{1}{C} \int_{0}^{t} i(t)\,dt + L \frac{di(t)}{dt} 
+\end{equation}
+\begin{equation}
+L \frac{di(t)}{dt}=10\Rightarrow \frac{di(t)}{dt}=\frac{10}{L}
+\end{equation}
+Sabiendo el valor de la variación de la intensidad con respecto de t en $t=0^+$ , derivamos la solución general para obtener C2:
+\begin{equation}
+i^,(0) =e^{-\alpha 0} ( \omega_{d}C_{2} \cos \omega_{d} 0)=\frac{10}{L}\Rightarrow C_{2}=\frac{10}{\omega_{d}L}
+\end{equation}
+Conociendo C2 definimos la respuesta de la corriente del circuito: 
+\begin{equation}
+i(t) =e^{-\alpha t} \frac{10}{\omega_{d}L} \sin \omega_{d} t 
+\end{equation}
+Ahora sí la definimos con la ayuda de matlab representamos la respuesta en la figura \hyperref[fig:Respuesta i-t]{Figura~\ref*{fig:Respuesta i-t}}\\
+\\
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=\textwidth]{I_problema3.png}
+    \caption{Respuesta i-t}
+    \label{fig:Respuesta i-t}
+\end{figure}
+En esta representación de la respuesta del circuito se puede observar su forma es oscilatoria decreciente sobre el valor estacionario, que acaba siendo constante. \\
+Se puede ver claramente su primer pico máximo, también el decrecimiento posterior de la amplitud de las oscilaciones, el cual responde al componente $e^{-\alpha t}$ de la respuesta.\\
+La frecuencia de oscilaciones lo determina la frecuencia angular amortiguada $w_d$, cuanto más mayor es su valor, mayor es la frecuencia de oscilaciones.
+\end{document}
